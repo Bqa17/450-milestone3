@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/450-milestone3/static/css/main.8f32d821.css",
+    "main.js": "/450-milestone3/static/js/main.912f8d8f.js",
+    "index.html": "/450-milestone3/index.html",
+    "main.8f32d821.css.map": "/450-milestone3/static/css/main.8f32d821.css.map",
+    "main.912f8d8f.js.map": "/450-milestone3/static/js/main.912f8d8f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8f32d821.css",
+    "static/js/main.912f8d8f.js"
+  ]
+}
