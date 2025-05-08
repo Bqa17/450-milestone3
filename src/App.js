@@ -60,7 +60,7 @@ class App extends Component {
             <WinsLineGraph data={data} />
           </div>
           <div className="dashboard-item">
-            <ConferenceBarChart data={data} />
+            <ConferenceBarChart />
           </div>
           <div className="dashboard-item">
             <TurnoverScatterplot data={data} />

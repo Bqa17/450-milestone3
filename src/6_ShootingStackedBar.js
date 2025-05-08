@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3'
-
+import basket from './basketball.csv';
 class ShootingStackedBar extends Component {
   constructor(props) {
       super(props);
@@ -11,29 +11,44 @@ class ShootingStackedBar extends Component {
     }
   
     componentDidMount() {
-      d3.csv('/basketball.csv').then(this.set_data);
+      d3.csv(basket)
+        .then((csv_data) => {
+          this.setState({ data: csv_data }, () => {
+            this.prepareChartData();
+          });
+        })
+        .catch((err) => {
+          console.log('Error loading CSV data:', err);
+        });
     }
-  
-    set_data = (parsedCsv) => {
-      const formattedData = parsedCsv
-      .filter(row => {
-        const val = row.SEED.trim()
-        return val <= 1
-      })
-      .map((row) => ({
-        team: row.TEAM,
-        twopoint: parseFloat(row["2P_D"]),
-        threepoint: parseFloat(row["3P_D"]),
-        overall: parseFloat(row.EFG_D),
-        overallSHOT: parseFloat(row.EFG_O)
-      }));
 
-      this.setState({ data: formattedData }, () => {
-        this.prepareChartData();
+    
+    prepareChartData = () => {
+      const filtered = this.state.data
+        .filter(row =>
+          row.SEED !== undefined && 
+          row.SEED !== "NA" && 
+          row.SEED !== "N/A" && 
+          parseInt(row.SEED) <= 1
+
+
+        )
+        .map((row) => ({
+          team: row.TEAM,
+          twopoint: parseFloat(row["2P_D"]),
+          threepoint: parseFloat(row["3P_D"]),
+          overall: parseFloat(row.EFG_D),
+          overallSHOT: parseFloat(row.EFG_O)
+        }));
+    
+      this.setState({ data: filtered }, () => {
+        this.renderChart();
       });
     };
+    
+    
 
-    prepareChartData = () => {
+    renderChart = () => {
       const { data } = this.state;
       d3.select(this.chartRef.current).selectAll('*').remove();
               

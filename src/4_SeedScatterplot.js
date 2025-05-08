@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-
+import basket from './basketball.csv';
 class SeedScatterplot extends Component {
   constructor(props) {
       super(props);
@@ -11,24 +11,37 @@ class SeedScatterplot extends Component {
     }
   
     componentDidMount() {
-      d3.csv('/basketball.csv').then(this.set_data);
+      d3.csv(basket)
+        .then((csv_data) => {
+          this.setState({ data: csv_data }, () => {
+            this.prepareChartData();
+          });
+        })
+        .catch((err) => {
+          console.log('Error loading CSV data:', err);
+        });
     }
 
-    set_data = (parsedCsv) => {
-        const formattedData = parsedCsv
-        .filter(row => {
-          const val = row.SEED.trim()
-      return val !== "NA" && val !== "N/A"
-    })
+    prepareChartData = () => {
+      const filtered = this.state.data
+        .filter(row =>
+          row.SEED !== undefined &&
+          row.SEED !== null &&
+          row.SEED !== "NA" &&
+          row.SEED !== "N/A" &&
+          !isNaN(parseInt(row.SEED)) &&
+          !isNaN(parseFloat(row.WAB))
+        )
         .map((row) => ({
           WAB: parseFloat(row.WAB),
           SEED: parseInt(row.SEED),
         }));
     
-        this.setState({ data: formattedData }, () => {
-          this.prepareChartData();
-        });
-      };
+      this.setState({ data: filtered }, () => {
+        this.renderChart(); 
+      });
+    };
+    
     
       computeRegressionLine = (data) => {
         const n = data.length;
@@ -43,7 +56,7 @@ class SeedScatterplot extends Component {
         return { slope, intercept };
       };
 
-      prepareChartData = () => {
+      renderChart = () => {
           const { data } = this.state;
           d3.select(this.chartRef.current).selectAll('*').remove();
         

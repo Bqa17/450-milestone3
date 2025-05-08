@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import basket from './basketball.csv'
 
 class ConferenceBarChart extends Component {
   constructor(props) {
@@ -11,28 +12,23 @@ class ConferenceBarChart extends Component {
   }
 
   componentDidMount() {
-    d3.csv('/basketball.csv').then(this.set_data);
+    // Load CSV and update state with the data
+    d3.csv(basket).then((csv_data) => {
+      this.setState({ data: csv_data }, () => {
+        this.prepareChartData();
+      });
+    }).catch((err) => {
+      console.log('Error loading CSV data:', err);
+    });
   }
 
-  set_data = (parsedCsv) => {
-    const formattedData = parsedCsv.map((row) => {
-      return {
-        team: row.TEAM,
-        conference: row.CONF,
-      };
-    });
-
-    this.setState({ data: formattedData }, () => {
-      this.prepareChartData();
-    });
-  };
 
   prepareChartData() {
     const { data } = this.state;
 
-    // Group data by conference
+    // Group data by conference and count the number of teams
     const groupedData = data.reduce((acc, row) => {
-      const conference = row.conference;
+      const conference = row.CONF;
       if (!acc[conference]) {
         acc[conference] = 0;
       }
